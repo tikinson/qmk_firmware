@@ -1,5 +1,4 @@
-// Copyright 2021 Keyboard Dweebs (@doesntfazer)
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include QMK_KEYBOARD_H
 #include "keymap_ukrainian.h"
 
@@ -7,8 +6,7 @@
 #define CAE LCTL(LALT(KC_END))
 #define CAD LCTL(LALT(KC_DEL))
 
-
-enum crow_layers {
+enum layers {
     _QWERTY,
     _LOWER,
     _RAISE,
@@ -18,7 +16,7 @@ enum crow_layers {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [_QWERTY] = LAYOUT (
-//,-----------------------------------------------------.                    ,-----------------------------------------------------.
+  //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_TAB,    KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  KC_ESC,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
@@ -33,12 +31,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
         KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                        KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,  KC_F12,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LSFT,   UA_GE,  KC_GRV, KC_LBRC, KC_RBRC, XXXXXXX,                      KC_PSCR,   KC_UP,  KC_DEL,  KC_CAPS, KC_NUM, XXXXXXX,
+      KC_LSFT,   UA_GE,  KC_GRV, KC_LBRC, KC_RBRC, XXXXXXX,                      KC_PSCR,   KC_UP,  KC_DEL,  KC_CAPS, KC_NUM, RGB_TOG,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LCTL,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                      KC_LEFT, KC_DOWN, KC_RIGHT, XXXXXXX, XXXXXXX, XXXXXXX,
+      KC_LCTL,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,   CAD,                       KC_LEFT, KC_DOWN, KC_RIGHT, XXXXXXX, RGB_MOD, RGB_RMOD,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           KC_LGUI, _______,  KC_SPC,     KC_ENT,   MO(3), KC_BSPC
                                       //`--------------------------'  `--------------------------'
+    ),
     [_RAISE] = LAYOUT (
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
        KC_TAB, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_PSLS,
@@ -51,13 +50,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                       //`--------------------------'  `--------------------------'
     ),
     [_ADJUST] = LAYOUT (
-        KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,
-        KC_F11,    KC_F12,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    CAD,    CAE,    CAD,    CAD,
-        KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,
+        KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10, KC_F11,  KC_F12,
+        KC_F11,    KC_F12,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    CAD,    CAE,    CAD,    CAD, XXXXXXX, XXXXXXX,
+        KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS, XXXXXXX, XXXXXXX,
                           KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS,    KC_TRNS
     ),
 };
-
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -66,7 +64,7 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
             // if any other key was pressed while the mod-tap key is held down.
             return false;
         default:
-            // Force the mod-tap key press to be handled as a modifier if any
+            // Force the= mod-tap key press to be handled as a modifier if any
             // other key was pressed while the mod-tap key is held down.
             return true;
     }
@@ -81,11 +79,14 @@ bool oled_task_user(void) {
         case _QWERTY:
             oled_write_P(PSTR("Default\n"), false);
             break;
-        case _FN:
-            oled_write_P(PSTR("FN\n"), false);
+        case _LOWER:
+            oled_write_P(PSTR("LOWER\n"), false);
             break;
-        case _ADJ:
-            oled_write_P(PSTR("ADJ\n"), false);
+        case _RAISE:
+            oled_write_P(PSTR("RAISE\n"), false);
+            break;
+        case _ADJUST:
+            oled_write_P(PSTR("ADJUST\n"), false);
             break;
         default:
             // Or use the write_ln shortcut over adding '\n' to the end of your string
@@ -102,6 +103,21 @@ bool oled_task_user(void) {
 }
 #endif
 
+#if defined(ENCODER_MAP_ENABLE)
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
+    [0] = { ENCODER_CCW_CW(KC_MS_WH_UP, KC_MS_WH_DOWN), ENCODER_CCW_CW(KC_LEFT, KC_RIGHT)  }, //default layout
+    [1] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(RGB_RMOD, RGB_MOD)  }, //
+    [2] = { ENCODER_CCW_CW(RGB_HUD, RGB_HUI),           ENCODER_CCW_CW(RGB_SAD, RGB_SAI)  }, //
+    [3] = { ENCODER_CCW_CW(RGB_VAD, RGB_VAI),           ENCODER_CCW_CW(RGB_SPD, RGB_SPI) }, // two mods are pressed
+};
+#endif
 
+
+
+
+
+
+
+    
 
 
