@@ -1,10 +1,13 @@
 
-#include "keycodes.h"
+#include "tknbrd0/modules/cartridge/cartridge.h"
 #include QMK_KEYBOARD_H
 #include "keymap_ukrainian.h"
+#include "tknbrd0/custom_keycodes.h"
+#include <stdio.h>
+#include "oled_frames.h"
 
-#define CTLA LCTL(KC_A)
-#define CAE LCTL(LALT(KC_END))
+char wpm_str[10];
+
 #define CAD LCTL(LALT(KC_DEL))
 
 enum layers {
@@ -12,6 +15,7 @@ enum layers {
     _LOWER,
     _RAISE,
     _ADJUST,
+    _GAMINGONE,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -22,7 +26,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,    KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, KC_QUOT,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LCTL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_RALT,
+      KC_LCTL,    KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_LALT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           KC_LGUI,   MO(1),  KC_SPC,     KC_ENT,   MO(2), KC_BSPC
                                       //`--------------------------'  `--------------------------'
@@ -45,7 +49,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LSFT,   KC_P1,   KC_P2,   KC_P3,   KC_P4,   KC_P5,                      KC_MINS,  KC_EQL,  KC_GRV, KC_LBRC, KC_RBRC, KC_PIPE,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_LCTL,   KC_P6,   KC_P7,   KC_P8,   KC_P9,   KC_P0,                      KC_UNDS, KC_PLUS, KC_TILD, KC_LCBR, KC_RCBR, KC_RALT,
+      KC_LCTL,   KC_P6,   KC_P7,   KC_P8,   KC_P9,   KC_P0,                      KC_UNDS, KC_PLUS, KC_TILD, KC_LCBR, KC_RCBR, KC_LALT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                           KC_LGUI,   MO(3),  KC_SPC,     KC_ENT, _______, KC_BSPC
                                       //`--------------------------'  `--------------------------'
@@ -54,14 +58,34 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
         KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                      KC_F7,    KC_F8,    KC_F9,  KC_F10, KC_F11,  KC_F12,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                        CAD, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+      KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, TO(_GAMINGONE),                   CAD, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                      KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                         KC_TRNS, KC_TRNS, KC_TRNS,      KC_TRNS, KC_TRNS, KC_TRNS
                                       //`--------------------------'  `--------------------------'
     ),
+    [_GAMINGONE] = LAYOUT (
+  //,-----------------------------------------------------.                    ,-----------------------------------------------------.
+       KC_TAB,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                         KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,  KC_ESC,
+  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+      KC_LSFT,    KC_A,    KC_W,    KC_E,    KC_R,    KC_T,                         KC_H,    KC_J,    KC_K,    KC_L, KC_SCLN, TO(_QWERTY),
+  //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
+      KC_LCTL,    KC_Q,    KC_S,    KC_D,   KC_F,    KC_C,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_LALT,
+  //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
+                                            KC_SPC,KC_ESC,  KC_ENT,  KC_LGUI,   HELLO, KC_BSPC
+                                      //`--------------------------'  `--------------------------'
+    )
 };
+
+// catch our custom keycode to handle it
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    return cartridge_input(keycode, record);
+};
+
+void housekeeping_task_user(void) {
+    cartridge_task();
+}
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -76,34 +100,101 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
+
+
+// OLED
 #ifdef OLED_ENABLE
+
+void suspend_power_down_kb(void) {
+    //rgb_matrix_set_suspend_state(true);
+    suspend_power_down_user();
+}
+
+void suspend_wakeup_init_kb(void) {
+    //rgb_matrix_set_suspend_state(false);
+    suspend_wakeup_init_user();
+}
+
+uint32_t anim_timer         = 0;
+uint32_t anim_sleep         = 0;
+uint8_t current_idle_frame = 0;
+uint8_t current_tap_frame = 0;
+
+
+static void render_animation(void) {
+    void animation_phase(void) {
+        if (get_current_wpm() <= IDLE_SPEED) {
+            current_idle_frame = (current_idle_frame + 1) % IDLE_FRAMES;
+            oled_write_raw_P(idle[abs((IDLE_FRAMES - 1) - current_idle_frame)], ANIM_SIZE);
+        }
+
+        if (get_current_wpm() > IDLE_SPEED && get_current_wpm() < TAP_SPEED) {
+            oled_write_raw_P(prep[0], ANIM_SIZE);
+        }
+
+        if (get_current_wpm() >= TAP_SPEED) {
+            current_tap_frame = (current_tap_frame + 1) % TAP_FRAMES;
+            oled_write_raw_P(tap[abs((TAP_FRAMES - 1) - current_tap_frame)], ANIM_SIZE);
+        }
+    }
+    if (get_current_wpm() != 000) {
+        oled_on();  // Enables OLED on any alpha keypress
+
+        if (timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
+            anim_timer = timer_read32();
+            animation_phase();
+        }
+
+        anim_sleep = timer_read32();
+    } else {
+        if (timer_elapsed32(anim_sleep) > OLED_TIMEOUT) {
+            oled_off();
+        } else {
+            if (timer_elapsed32(anim_timer) > ANIM_FRAME_DURATION) {
+                anim_timer = timer_read32();
+                animation_phase();
+            }
+        }
+    }
+}
+
+// Draw to OLED
 bool oled_task_user(void) {
-    // Host Keyboard Layer Status
-    oled_write_P(PSTR("Layer: "), false);
+    render_animation();
+
+    // WPM text
+    oled_set_cursor(0, 0);
+    sprintf(wpm_str, "%03d", get_current_wpm()); // %03d defines digits to display
+    oled_write(wpm_str, false);
+
+    // Layer text
+    oled_set_cursor(0, 1);
 
     switch (get_highest_layer(layer_state)) {
         case _QWERTY:
-            oled_write_P(PSTR("Default\n"), false);
+            oled_write_P(PSTR("DFLT"), false);
             break;
         case _LOWER:
-            oled_write_P(PSTR("LOWER\n"), false);
+            oled_write_P(PSTR("LWR"), false);
             break;
         case _RAISE:
-            oled_write_P(PSTR("RAISE\n"), false);
+            oled_write_P(PSTR("RS"), false);
             break;
         case _ADJUST:
-            oled_write_P(PSTR("ADJUST\n"), false);
+            oled_write_P(PSTR("ADJ"), false);
+            break;
+        case _GAMINGONE:
+            oled_write_P(PSTR("GMNG1"), false);
             break;
         default:
             // Or use the write_ln shortcut over adding '\n' to the end of your string
             oled_write_ln_P(PSTR("Undefined"), false);
     }
 
-    // Host Keyboard LED Status
+    // Caps lock text
     led_t led_state = host_keyboard_led_state();
-    oled_write_P(led_state.num_lock ? PSTR("NUM ") : PSTR("    "), false);
-    oled_write_P(led_state.caps_lock ? PSTR("CAP ") : PSTR("    "), false);
-    oled_write_P(led_state.scroll_lock ? PSTR("SCR ") : PSTR("    "), false);
+    oled_set_cursor(0, 3);
+    oled_write_P(led_state.caps_lock ? PSTR("CAPS") : PSTR(""), false);
 
     return false;
 }
@@ -111,9 +202,10 @@ bool oled_task_user(void) {
 
 #if defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-    [0] = { ENCODER_CCW_CW(KC_MS_WH_UP, KC_MS_WH_DOWN), ENCODER_CCW_CW(KC_LEFT, KC_RIGHT)  }, //default layout
-    [1] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU),           ENCODER_CCW_CW(RGB_RMOD, RGB_MOD)  }, //
-    [2] = { ENCODER_CCW_CW(RGB_HUD, RGB_HUI),           ENCODER_CCW_CW(RGB_SAD, RGB_SAI)  }, //
-    [3] = { ENCODER_CCW_CW(RGB_VAD, RGB_VAI),           ENCODER_CCW_CW(RGB_SPD, RGB_SPI) }, // two mods are pressed
+    [0] = { ENCODER_CCW_CW(MS_WHLU, MS_WHLD), ENCODER_CCW_CW(KC_LEFT, KC_RIGHT)  }, // default layout
+    [1] = { ENCODER_CCW_CW(KC_KB_VOLUME_DOWN, KC_KB_VOLUME_UP),           ENCODER_CCW_CW(UG_PREV, UG_NEXT)  }, //
+    [2] = { ENCODER_CCW_CW(UG_HUED, UG_HUEU),           ENCODER_CCW_CW(UG_SATD, UG_SATU)  }, //
+    [3] = { ENCODER_CCW_CW(UG_VALD, UG_VALU),           ENCODER_CCW_CW(UG_SPDU, UG_SPDD) }, // two mods are pressed
+    [4] = { ENCODER_CCW_CW(KC_KB_VOLUME_DOWN, KC_KB_VOLUME_UP),           ENCODER_CCW_CW(MS_WHLU, MS_WHLD)  }, // gaming layout
 };
 #endif
