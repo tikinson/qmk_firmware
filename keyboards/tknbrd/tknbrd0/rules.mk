@@ -1,4 +1,9 @@
 SRC += modules/cartridge/cartridge.c
+SRC += modules/event_queue/event_queue.c
+
+CONSOLE_ENABLE = yes
+
+ENCODER_ENABLE = yes
 
 RGBLIGHT_ENABLE = yes
 RGBLIGHT_ANIMATIONS = yes

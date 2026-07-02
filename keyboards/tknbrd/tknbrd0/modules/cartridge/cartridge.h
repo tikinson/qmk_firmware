@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stdint.h>
 #include "quantum.h"
 
 typedef enum {
@@ -9,5 +10,5 @@ typedef enum {
 
 void cartridge_init(void);
 void cartridge_task(void);
-bool cartridge_input(uint16_t keycode, keyrecord_t *record);
-void cartridge_emit(cartridge_event_t evt);
+
+bool user_input(uint16_t keycode, keyrecord_t *record);

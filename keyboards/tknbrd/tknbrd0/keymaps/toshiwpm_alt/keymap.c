@@ -1,4 +1,5 @@
 
+#include "tknbrd/tknbrd0/modules/cartridge/cartridge.h"
 #include "tknbrd0/modules/cartridge/cartridge.h"
 #include QMK_KEYBOARD_H
 #include "keymap_ukrainian.h"
@@ -78,14 +79,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     )
 };
 
-// catch our custom keycode to handle it
+void keyboard_post_init_user(void) {
+    // Customise these values to desired behaviour
+    debug_enable=true;
+    //debug_matrix=true;
+    debug_keyboard=true;
+    //debug_mouse=true;
+    cartridge_init();
+};
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    return cartridge_input(keycode, record);
+    //all the "user input" we will filter except dedicated keycodes
+    return user_input(keycode, record);
 };
 
 void housekeeping_task_user(void) {
     cartridge_task();
-}
+};
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
@@ -98,7 +108,7 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
             // other key was pressed while the mod-tap key is held down.
             return true;
     }
-}
+};
 
 
 
@@ -202,10 +212,10 @@ bool oled_task_user(void) {
 
 #if defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-    [0] = { ENCODER_CCW_CW(MS_WHLU, MS_WHLD), ENCODER_CCW_CW(KC_LEFT, KC_RIGHT)  }, // default layout
+    [0] = { ENCODER_CCW_CW(MS_WHLU, MS_WHLD),                             ENCODER_CCW_CW(KC_LEFT, KC_RIGHT)  }, // default layout
     [1] = { ENCODER_CCW_CW(KC_KB_VOLUME_DOWN, KC_KB_VOLUME_UP),           ENCODER_CCW_CW(UG_PREV, UG_NEXT)  }, //
-    [2] = { ENCODER_CCW_CW(UG_HUED, UG_HUEU),           ENCODER_CCW_CW(UG_SATD, UG_SATU)  }, //
-    [3] = { ENCODER_CCW_CW(UG_VALD, UG_VALU),           ENCODER_CCW_CW(UG_SPDU, UG_SPDD) }, // two mods are pressed
+    [2] = { ENCODER_CCW_CW(UG_HUED, UG_HUEU),                             ENCODER_CCW_CW(UG_SATD, UG_SATU)  }, //
+    [3] = { ENCODER_CCW_CW(UG_VALD, UG_VALU),                             ENCODER_CCW_CW(UG_SPDU, UG_SPDD) }, // two mods are pressed
     [4] = { ENCODER_CCW_CW(KC_KB_VOLUME_DOWN, KC_KB_VOLUME_UP),           ENCODER_CCW_CW(MS_WHLU, MS_WHLD)  }, // gaming layout
 };
 #endif
