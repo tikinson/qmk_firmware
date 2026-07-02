@@ -1,8 +1,7 @@
 
-#include "tknbrd0/modules/cartridge/cartridge.h"
+#include "keycodes.h"
 #include QMK_KEYBOARD_H
 #include "keymap_ukrainian.h"
-#include "tknbrd0/custom_keycodes.h"
 #include <stdio.h>
 #include "oled_frames.h"
 
@@ -73,19 +72,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_LCTL,    KC_Q,    KC_S,    KC_D,   KC_F,    KC_C,                         KC_N,    KC_M, KC_COMM,  KC_DOT, KC_SLSH,  KC_LALT,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
-                                            KC_SPC,KC_ESC,  KC_ENT,  KC_LGUI,   HELLO, KC_BSPC
+                                            KC_SPC,KC_ESC,  KC_ENT,  KC_LGUI,   KC_TRNS, KC_BSPC
                                       //`--------------------------'  `--------------------------'
     )
 };
-
-// catch our custom keycode to handle it
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    return cartridge_input(keycode, record);
-};
-
-void housekeeping_task_user(void) {
-    cartridge_task();
-}
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
