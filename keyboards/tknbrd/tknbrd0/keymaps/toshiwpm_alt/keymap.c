@@ -5,6 +5,7 @@
 #include "keymap_ukrainian.h"
 #include "tknbrd0/custom_keycodes.h"
 #include <stdio.h>
+#include "uart.h"
 #include "oled_frames.h"
 
 char wpm_str[10];
@@ -86,6 +87,7 @@ void keyboard_post_init_user(void) {
     debug_keyboard=true;
     //debug_mouse=true;
     cartridge_init();
+    //uart_init(115200);
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {

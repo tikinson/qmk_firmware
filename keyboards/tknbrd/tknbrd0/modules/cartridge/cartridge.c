@@ -4,12 +4,13 @@
 #include "tknbrd0/modules/event_queue/event_queue.h"
 #include "send_string.h"
 #include "print.h"
-
+#include "uart.h"
 
 
 //main initialisation of cartridge when inserted
 void cartridge_init(){
     event_queue_init();
+    uart_init(115200);
 };
 
 //expecting some layer of tasks, so we can decorate some happenings with animation, etc...
@@ -22,6 +23,9 @@ void cartridge_task(void) {
         {
             case EVENT_HELLO_HOST:
                 send_string("hello host!");
+                const char *msg = "HELLO ddkHOST\r\n";
+                uart_transmit((const uint8_t *)msg, strlen(msg));
+                // uart_available();
                 break;
 
             default:
