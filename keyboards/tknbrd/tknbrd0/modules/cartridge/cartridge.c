@@ -2,15 +2,15 @@
 #include "debug.h"
 #include "tknbrd0/custom_keycodes.h"
 #include "tknbrd0/modules/event_queue/event_queue.h"
+#include "tknbrd0/modules/transport/transport_uart.h"
 #include "send_string.h"
 #include "print.h"
-#include "uart.h"
+// #include "uart.h"
 
-
-//main initialisation of cartridge when inserted
+// main initialisation of cartridge when inserted
 void cartridge_init(){
     event_queue_init();
-    uart_init(115200);
+    transport_init();
 };
 
 //expecting some layer of tasks, so we can decorate some happenings with animation, etc...
@@ -23,9 +23,12 @@ void cartridge_task(void) {
         {
             case EVENT_HELLO_HOST:
                 send_string("hello host!");
-                const char *msg = "HELLO ddkHOST\r\n";
-                uart_transmit((const uint8_t *)msg, strlen(msg));
-                // uart_available();
+                // uart_init(115200);
+                // const char *msg = "UART IS WORKING\r\n";
+                // uart_transmit((const uint8_t *)msg, strlen(msg));
+                break;
+            case EVENT_CARTRIDGE_PING_PONG:
+                transport_send_ping();
                 break;
 
             default:
@@ -45,6 +48,16 @@ bool user_input(uint16_t keycode, keyrecord_t *record){
             event_queue_push(EVENT_HELLO_HOST);
             dprintf("evt=%d\n", keycode);
             return false;
+            break;
+        case PING_C:
+            event_queue_push(EVENT_CARTRIDGE_PING_PONG);
+            return false;
+            break;
+        default:
+            dprintf("NO MATCHING INPUT RECORDS WAS FOUND!");
+            return true;
+            break;
+
     }
     return true;
 };

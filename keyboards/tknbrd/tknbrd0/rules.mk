@@ -1,5 +1,7 @@
 SRC += modules/cartridge/cartridge.c
 SRC += modules/event_queue/event_queue.c
+SRC += modules/hud/hud.c
+SRC += modules/transport/transport_uart.c
 
 CONSOLE_ENABLE = yes
 
