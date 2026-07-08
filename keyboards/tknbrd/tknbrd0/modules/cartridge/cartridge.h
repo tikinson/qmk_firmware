@@ -6,7 +6,7 @@
 typedef enum {
     EVENT_NONE,
     EVENT_HELLO_HOST,
-    EVENT_CARTRIDGE_PING_PONG,
+    EVENT_CARTRIDGE_PING,
 } cartridge_event_t;
 
 void cartridge_init(void);

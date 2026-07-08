@@ -3,9 +3,11 @@
 #include "tknbrd0/custom_keycodes.h"
 #include "tknbrd0/modules/event_queue/event_queue.h"
 #include "tknbrd0/modules/transport/transport_uart.h"
+#include "tknbrd0/modules/protocol/protocol.h"
+
 #include "send_string.h"
 #include "print.h"
-// #include "uart.h"
+
 
 // main initialisation of cartridge when inserted
 void cartridge_init(){
@@ -23,12 +25,9 @@ void cartridge_task(void) {
         {
             case EVENT_HELLO_HOST:
                 send_string("hello host!");
-                // uart_init(115200);
-                // const char *msg = "UART IS WORKING\r\n";
-                // uart_transmit((const uint8_t *)msg, strlen(msg));
                 break;
-            case EVENT_CARTRIDGE_PING_PONG:
-                transport_send_ping();
+            case EVENT_CARTRIDGE_PING:
+                protocol_ping();
                 break;
 
             default:
