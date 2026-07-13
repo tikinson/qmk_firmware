@@ -5,6 +5,7 @@
 #include QMK_KEYBOARD_H
 #include "keymap_ukrainian.h"
 #include "tknbrd0/custom_keycodes.h"
+#include "debug.h"
 #include <stdio.h>
 #include "oled_frames.h"
 

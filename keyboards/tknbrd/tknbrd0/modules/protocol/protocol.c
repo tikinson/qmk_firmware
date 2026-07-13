@@ -4,14 +4,22 @@
 
 static enum protocol_state state;
 
-void protocol_init_state(){
+void protocol_init_state(void){
     state = PROTOCOL_IDLE;
 };
 
 void protocol_ping(){
-    uint8_t ping_packet[8] = {
+    uint8_t ping_packet[16] = {
         0xAA,
         0x01,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
+        0x00,
         0x00,
         0x00,
         0x00,

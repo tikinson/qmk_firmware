@@ -19,6 +19,7 @@ void cartridge_init(){
 void cartridge_task(void) {
 
     cartridge_event_t evt;
+    transport_task();
 
     while (event_queue_pop(&evt)){
         switch (evt)
@@ -26,7 +27,7 @@ void cartridge_task(void) {
             case EVENT_HELLO_HOST:
                 send_string("hello host!");
                 break;
-            case EVENT_CARTRIDGE_PING:
+            case EVENT_CARTRIDGE_PING_PONG:
                 protocol_ping();
                 break;
 
