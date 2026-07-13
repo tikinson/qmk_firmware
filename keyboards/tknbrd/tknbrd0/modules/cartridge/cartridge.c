@@ -19,7 +19,8 @@ void cartridge_init(){
 void cartridge_task(void) {
 
     cartridge_event_t evt;
-    transport_task();
+    //transport_task();
+    transport_echo_byte();
 
     while (event_queue_pop(&evt)){
         switch (evt)

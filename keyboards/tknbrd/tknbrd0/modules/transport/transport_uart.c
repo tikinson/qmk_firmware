@@ -39,19 +39,25 @@ void transport_task(){
 };
 
 bool transport_receive_packet(uint8_t *data, uint16_t len){
-    if (uart_available() < len)
-        return false;
+    uint16_t available = uart_available();
 
-    rx_state = RX_READ_DATA;
-    uart_receive((uint8_t *)data, len);
-    for (uint8_t i = 0; i < len; i++)
+    if (available < len)
     {
-        dprintf("%02X ", data[i]);
+        return false;
     }
-    dprintf("\n");
+    dprintf("uart bytes: %d\n", available);
+    rx_state = RX_READ_DATA;
+    uart_receive(data, len);
     rx_state = RX_WAIT_START;
     dprintf("packet received\n");
-    //dprintf((const char*)rx_state);
-    //send_string((const char *)rx_state);
+
     return true;
+};
+
+void transport_echo_byte(void){
+    if (uart_available()){
+        uint8_t data;
+        uart_receive(&data, 1);
+        uart_write(data);
+    }
 };
