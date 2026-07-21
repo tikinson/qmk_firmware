@@ -1,10 +1,10 @@
 
 #include "tknbrd/tknbrd0/custom_keycodes.h"
 #include "tknbrd/tknbrd0/modules/cartridge/cartridge.h"
-//#include "tknbrd0/modules/cartridge/cartridge.h"
+#include "tknbrd/tknbrd0/modules/event_queue/event_queue.h"
 #include QMK_KEYBOARD_H
 #include "keymap_ukrainian.h"
-#include "tknbrd0/custom_keycodes.h"
+#include "tknbrd/tknbrd0/custom_keycodes.h"
 #include "debug.h"
 #include <stdio.h>
 #include "oled_frames.h"
@@ -87,8 +87,9 @@ void keyboard_post_init_user(void) {
     //debug_matrix=true;
     debug_keyboard=true;
     //debug_mouse=true;
-    cartridge_init();
     //uart_init(115200);
+    cartridge_init();
+
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {

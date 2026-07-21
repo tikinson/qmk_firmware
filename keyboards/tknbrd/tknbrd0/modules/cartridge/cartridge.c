@@ -1,9 +1,10 @@
 #include "cartridge.h"
 #include "debug.h"
 #include "tknbrd0/custom_keycodes.h"
-#include "tknbrd0/modules/event_queue/event_queue.h"
-#include "tknbrd0/modules/transport/transport_uart.h"
-#include "tknbrd0/modules/protocol/protocol.h"
+#include "tknbrd/tknbrd0/modules/event_queue/event_queue.h"
+#include "tknbrd/tknbrd0/modules/transport/transport_uart.h"
+#include "tknbrd/tknbrd0/modules/protocol/protocol.h"
+
 
 #include "send_string.h"
 #include "print.h"
@@ -20,9 +21,8 @@ void cartridge_task(void) {
 
     cartridge_event_t evt;
     //transport_task();
-    transport_echo_byte();
 
-    while (event_queue_pop(&evt)){
+    if (event_queue_pop(&evt)){
         switch (evt)
         {
             case EVENT_HELLO_HOST:
@@ -47,7 +47,6 @@ bool user_input(uint16_t keycode, keyrecord_t *record){
     switch (keycode) {
         case HELLO:
             event_queue_push(EVENT_HELLO_HOST);
-            dprintf("evt=%d\n", keycode);
             return false;
             break;
         case PING_C:
@@ -55,7 +54,7 @@ bool user_input(uint16_t keycode, keyrecord_t *record){
             return false;
             break;
         default:
-            dprintf("NO MATCHING INPUT RECORDS WAS FOUND!");
+            //dprintf("NO MATCHING INPUT RECORDS WAS FOUND!");
             return true;
             break;
 

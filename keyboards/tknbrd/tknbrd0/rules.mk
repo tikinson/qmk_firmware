@@ -4,6 +4,9 @@ SRC += modules/hud/hud.c
 SRC += modules/transport/transport_uart.c
 SRC += modules/protocol/protocol.c
 
+DEBUG_ENABLE = yes
+LTO_ENABLE = no
+OPT = 0
 CONSOLE_ENABLE = yes
 
 RGBLIGHT_ENABLE = yes

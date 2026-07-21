@@ -1,6 +1,7 @@
 
 #include "transport_uart.h"
 #include <stdint.h>
+#include "_wait.h"
 #include "ch.h"
 #include "debug.h"
 #include "quantum.h"
@@ -54,10 +55,3 @@ bool transport_receive_packet(uint8_t *data, uint16_t len){
     return true;
 };
 
-void transport_echo_byte(void){
-    if (uart_available()){
-        uint8_t data;
-        uart_receive(&data, 1);
-        uart_write(data);
-    }
-};

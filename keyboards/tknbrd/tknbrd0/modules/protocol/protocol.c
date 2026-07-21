@@ -1,5 +1,6 @@
 #include "protocol.h"
 #include <stdint.h>
+#include "string.h"
 #include "tknbrd0/modules/transport/transport_uart.h"
 
 static enum protocol_state state;
@@ -28,5 +29,7 @@ void protocol_ping(){
         0x88,
     };
     transport_send_packet(ping_packet, sizeof(ping_packet));
+
+    // waiting but need to be limited by timeout
     state = PROTOCOL_WAITING_PONG;
 };
