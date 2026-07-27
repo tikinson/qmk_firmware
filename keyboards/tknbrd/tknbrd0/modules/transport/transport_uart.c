@@ -7,12 +7,14 @@
 #include "quantum.h"
 #include "uart.h"
 #include "string.h"
+#include "tknbrd/tknbrd0/modules/protocol/protocol.h"
+
+#define PACKET_SIZE 16
+#define BAUDRATE 115200
 
 enum rx_state {
     RX_WAIT_START,
-    RX_READ_TYPE,
-    RX_READ_LENGTH,
-    RX_READ_DATA
+    RX_COMPLETE
 };
 
 static enum rx_state rx_state = RX_WAIT_START;
@@ -23,35 +25,28 @@ static enum rx_state rx_state = RX_WAIT_START;
 // small transmissions from keeb to cartridge, about 16 bytes per packet?
 
 void transport_init(){
-    uart_init(115200);
+    uart_init(BAUDRATE);
+    rx_state = RX_WAIT_START;
 };
 
 void transport_send_packet(uint8_t *data, uint16_t len){
     uart_transmit(data, len);
 };
 
+static    uint8_t rx_buffer[PACKET_SIZE];
+//static    uint8_t rx_index;
+
 void transport_task(){
-    uint8_t buffer[16];
 
-    if(transport_receive_packet(buffer, 16))
-    {
-        dprintf("got packet\n");
+    //let's deal with framing
+    //check for bytes in uart fifo buffer
+    if (!uart_available()){
+        return;
     }
+    uart_receive(rx_buffer, PACKET_SIZE);
+    //is it actually packet received?
+    protocol_dispatch_incoming(rx_buffer, PACKET_SIZE);
+    rx_state = RX_COMPLETE;
 };
 
-bool transport_receive_packet(uint8_t *data, uint16_t len){
-    uint16_t available = uart_available();
-
-    if (available < len)
-    {
-        return false;
-    }
-    dprintf("uart bytes: %d\n", available);
-    rx_state = RX_READ_DATA;
-    uart_receive(data, len);
-    rx_state = RX_WAIT_START;
-    dprintf("packet received\n");
-
-    return true;
-};
 

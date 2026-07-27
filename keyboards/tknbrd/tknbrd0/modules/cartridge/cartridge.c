@@ -14,22 +14,24 @@
 void cartridge_init(){
     event_queue_init();
     transport_init();
+    protocol_request_init();
 };
 
 //expecting some layer of tasks, so we can decorate some happenings with animation, etc...
 void cartridge_task(void) {
 
     cartridge_event_t evt;
-    //transport_task();
+    transport_task();
+    protocol_task();
 
     if (event_queue_pop(&evt)){
         switch (evt)
         {
             case EVENT_HELLO_HOST:
-                send_string("hello host!");
+                send_string("HELLO HOST");
                 break;
             case EVENT_CARTRIDGE_PING_PONG:
-                protocol_ping();
+                protocol_request_ping();
                 break;
 
             default:
