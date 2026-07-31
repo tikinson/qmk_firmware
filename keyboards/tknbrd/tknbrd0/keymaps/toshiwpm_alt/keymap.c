@@ -1,6 +1,7 @@
 
 #include "tknbrd/tknbrd0/custom_keycodes.h"
 #include "tknbrd/tknbrd0/modules/cartridge/cartridge.h"
+#include "tknbrd/tknbrd0/modules/protocol/protocol.h"
 #include "tknbrd/tknbrd0/modules/event_queue/event_queue.h"
 #include QMK_KEYBOARD_H
 #include "keymap_ukrainian.h"
@@ -203,6 +204,26 @@ bool oled_task_user(void) {
         default:
             // Or use the write_ln shortcut over adding '\n' to the end of your string
             oled_write_ln_P(PSTR("Undefined"), false);
+    }
+
+    oled_set_cursor(0,2);
+
+    switch (protocol_get_state()){
+        case PROTOCOL_IDLE:
+            oled_write_P(PSTR("IDLE"), false);
+            break;
+
+        case PROTOCOL_WAITING_PONG:
+            oled_write_P(PSTR("WAIT"), false);
+            break;
+
+        case PROTOCOL_CONNECTED:
+            oled_write_P(PSTR("LINK"), false);
+            break;
+
+        case PROTOCOL_DISCONNECTED:
+            oled_write_P(PSTR("NO LINK"), false);
+            break;
     }
 
     // Caps lock text

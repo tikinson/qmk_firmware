@@ -3,13 +3,17 @@
 #include "string.h"
 #include "tknbrd0/modules/transport/transport_uart.h"
 
-static enum protocol_state state;
+static protocol_state_t state;
 
 typedef enum {
     PKT_PING = 0x01,
     PKT_PONG = 0x02,
     PKT_INIT = 0xAD,
 }packet_type_t;
+
+protocol_state_t protocol_get_state(){
+    return state;
+};
 
 void protocol_request_init(void){
     state = PROTOCOL_IDLE;
