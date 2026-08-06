@@ -213,8 +213,8 @@ bool oled_task_user(void) {
             oled_write_P(PSTR("IDLE"), false);
             break;
 
-        case PROTOCOL_WAITING_PONG:
-            oled_write_P(PSTR("WAIT"), false);
+        case PROTOCOL_WAITING:
+            oled_write_P(PSTR("WAITING"), false);
             break;
 
         case PROTOCOL_CONNECTED:

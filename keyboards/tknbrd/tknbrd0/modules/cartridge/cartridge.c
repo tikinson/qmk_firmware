@@ -22,13 +22,14 @@ void cartridge_task(void) {
 
     cartridge_event_t evt;
     transport_task();
-    protocol_task();
+    //protocol_task();
 
     if (event_queue_pop(&evt)){
         switch (evt)
         {
             case EVENT_HELLO_HOST:
-                send_string("HELLO HOST");
+                //send_string("HELLO HOST");
+                protocol_send_debug("event hello");
                 break;
             case EVENT_CARTRIDGE_PING_PONG:
                 protocol_request_ping();

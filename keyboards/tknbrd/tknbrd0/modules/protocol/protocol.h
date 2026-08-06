@@ -1,7 +1,7 @@
 #include <stdint.h>
 typedef enum {
     PROTOCOL_IDLE,
-    PROTOCOL_WAITING_PONG,
+    PROTOCOL_WAITING,
     PROTOCOL_CONNECTED,
     PROTOCOL_DISCONNECTED,
 } protocol_state_t;
@@ -17,5 +17,7 @@ typedef struct{
 protocol_state_t protocol_get_state(void);
 void protocol_request_ping(void);
 void protocol_request_init(void);
+void protocol_ack(void);
+void protocol_send_debug(const char *message);
 void protocol_task(void);
 void protocol_dispatch_incoming(const uint8_t *raw, uint16_t length);
