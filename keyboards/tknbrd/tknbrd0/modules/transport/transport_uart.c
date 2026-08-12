@@ -14,6 +14,7 @@
 
 enum rx_state {
     RX_WAIT_START,
+    RX_START,
     RX_COMPLETE
 };
 
@@ -43,6 +44,7 @@ void transport_task(){
     if (!uart_available()){
         return;
     }
+    rx_state = RX_START;
     uart_receive(rx_buffer, PACKET_SIZE);
     //is it actually packet received?
     protocol_dispatch_incoming(rx_buffer, PACKET_SIZE);

@@ -1,11 +1,10 @@
+#include QMK_KEYBOARD_H
 
 #include "tknbrd/tknbrd0/custom_keycodes.h"
-#include "tknbrd/tknbrd0/modules/cartridge/cartridge.h"
-#include "tknbrd/tknbrd0/modules/protocol/protocol.h"
 #include "tknbrd/tknbrd0/modules/event_queue/event_queue.h"
-#include QMK_KEYBOARD_H
+#include "tknbrd/tknbrd0/modules/hud/hud.h"
+#include "tknbrd/tknbrd0/modules/cartridge/cartridge.h"
 #include "keymap_ukrainian.h"
-#include "tknbrd/tknbrd0/custom_keycodes.h"
 #include "debug.h"
 #include <stdio.h>
 #include "oled_frames.h"
@@ -64,7 +63,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
       KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, TO(_GAMINGONE),                   CAD, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
   //|--------+--------+--------+--------+--------+--------|                    |--------+--------+--------+--------+--------+--------|
-      KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                      KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
+      KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,                  UREC_START,UREC_STOP, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS,
   //|--------+--------+--------+--------+--------+--------+--------|  |--------+--------+--------+--------+--------+--------+--------|
                                         KC_TRNS, KC_TRNS, KC_TRNS,      KC_TRNS, KC_TRNS, KC_TRNS
                                       //`--------------------------'  `--------------------------'
@@ -204,27 +203,10 @@ bool oled_task_user(void) {
         default:
             // Or use the write_ln shortcut over adding '\n' to the end of your string
             oled_write_ln_P(PSTR("Undefined"), false);
-    }
+    };
 
-    oled_set_cursor(0,2);
-
-    switch (protocol_get_state()){
-        case PROTOCOL_IDLE:
-            oled_write_P(PSTR("IDLE"), false);
-            break;
-
-        case PROTOCOL_WAITING:
-            oled_write_P(PSTR("WAITING"), false);
-            break;
-
-        case PROTOCOL_CONNECTED:
-            oled_write_P(PSTR("LINK"), false);
-            break;
-
-        case PROTOCOL_DISCONNECTED:
-            oled_write_P(PSTR("NO LINK"), false);
-            break;
-    }
+    //for all cartridge related parts i expect "ui" actions made by HUD
+    hud_render_task();
 
     // Caps lock text
     led_t led_state = host_keyboard_led_state();
