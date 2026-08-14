@@ -4,6 +4,8 @@
 #include "tknbrd/tknbrd0/modules/event_queue/event_queue.h"
 #include "tknbrd/tknbrd0/modules/hud/hud.h"
 #include "tknbrd/tknbrd0/modules/cartridge/cartridge.h"
+#include "tknbrd/tknbrd0/modules/protocol/protocol.h"
+
 #include "keymap_ukrainian.h"
 #include "debug.h"
 #include <stdio.h>
@@ -88,7 +90,10 @@ void keyboard_post_init_user(void) {
     debug_keyboard=true;
     //debug_mouse=true;
     //uart_init(115200);
-    cartridge_init();
+
+//TODO: cartridge initialization needs refactoring due to blocking state inside func
+
+    //cartridge_init();
 
 };
 
@@ -206,7 +211,46 @@ bool oled_task_user(void) {
     };
 
     //for all cartridge related parts i expect "ui" actions made by HUD
-    hud_render_task();
+    //hud_render_task();
+
+    oled_set_cursor(0,2);
+
+    switch (protocol_get_state()){
+        case PROTOCOL_IDLE:
+            oled_write_P(PSTR("IDLE"), false);
+            break;
+
+        case PROTOCOL_WAITING:
+            oled_write_P(PSTR("WAITING"), false);
+            break;
+
+        case PROTOCOL_CONNECTED:
+            oled_write_P(PSTR("LINK"), false);
+            break;
+
+        case PROTOCOL_DISCONNECTED:
+            oled_write_P(PSTR("NO LINK"), false);
+            break;
+
+        default:
+            break;
+    }
+
+    oled_set_cursor(18,0);
+    switch (cartridge_get_state()) {
+        case STATE_RECORDING:
+            oled_write_P(PSTR("REC"), false);
+            break;
+
+        case STATE_RECORDED:
+            oled_write_P(PSTR("   "), false);
+            break;
+
+        default:
+            break;
+    }
+    return false;
+
 
     // Caps lock text
     led_t led_state = host_keyboard_led_state();
