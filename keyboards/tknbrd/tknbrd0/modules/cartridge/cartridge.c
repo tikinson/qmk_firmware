@@ -5,6 +5,7 @@
 #include "tknbrd/tknbrd0/modules/transport/transport_uart.h"
 #include "tknbrd/tknbrd0/modules/protocol/protocol.h"
 #include "tknbrd/tknbrd0/modules/hud/hud.h"
+#include "tknbrd/tknbrd0/modules/recorder/recorder.h"
 
 
 #include "send_string.h"
@@ -49,13 +50,16 @@ void cartridge_task(void) {
             case EVENT_UREC_START:
                 //hud_notify_by_area("REC", HUD_AREA_RECORD);
                 state = STATE_RECORDING;
+                recorder_start();
                 break;
             case EVENT_UREC_STOP:
                 //hud_notify_by_area("   ", HUD_AREA_RECORD);
                 state = STATE_RECORDED;
+                recorder_stop();
                 break;
 
             default:
+                state = STATE_IDLE;
                 break;
         }
     }
@@ -65,7 +69,12 @@ bool user_input(uint16_t keycode, keyrecord_t *record){
     // if we caught keycode that meant to be handled as initiator of some happening in context of cartridge
     if (!record->event.pressed) {
         return true;
-    }
+    };
+
+    if (state == STATE_RECORDING) {
+        recorder_handle_record(keycode);
+        return true;
+    };
 
     switch (keycode) {
         case HELLO:
