@@ -90,10 +90,7 @@ void keyboard_post_init_user(void) {
     debug_keyboard=true;
     //debug_mouse=true;
     //uart_init(115200);
-
-//TODO: cartridge initialization needs refactoring due to blocking state inside func
-
-    //cartridge_init();
+    cartridge_init();
 
 };
 
@@ -104,6 +101,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 void housekeeping_task_user(void) {
     cartridge_task();
+        //for all cartridge related parts i expect "ui" actions made by HUD
+    hud_render_task();
 };
 
 bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
@@ -210,9 +209,6 @@ bool oled_task_user(void) {
             oled_write_ln_P(PSTR("Undefined"), false);
     };
 
-    //for all cartridge related parts i expect "ui" actions made by HUD
-    //hud_render_task();
-
     oled_set_cursor(0,2);
 
     switch (protocol_get_state()){
@@ -236,20 +232,6 @@ bool oled_task_user(void) {
             break;
     }
 
-    oled_set_cursor(18,0);
-    switch (cartridge_get_state()) {
-        case STATE_RECORDING:
-            oled_write_P(PSTR("REC"), false);
-            break;
-
-        case STATE_RECORDED:
-            oled_write_P(PSTR("   "), false);
-            break;
-
-        default:
-            break;
-    }
-    return false;
 
 
     // Caps lock text

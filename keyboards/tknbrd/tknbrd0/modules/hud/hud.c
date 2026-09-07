@@ -63,13 +63,10 @@ bool hud_render_task(){
             oled_write_P(PSTR("REC"), false);
             break;
 
-        case STATE_RECORDED:
+        case STATE_IDLE:
             oled_write_P(PSTR("   "), false);
             break;
 
-        case STATE_IDLE:
-            //do something extra while idle?
-            break;
         default:
             break;
     }

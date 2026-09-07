@@ -13,9 +13,8 @@ typedef enum {
 } cartridge_event_t;
 
 typedef enum {
-    STATE_RECORDING,
-    STATE_RECORDED,
     STATE_IDLE,
+    STATE_RECORDING,
 } cartridge_state_t;
 
 cartridge_state_t cartridge_get_state(void);

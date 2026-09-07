@@ -16,7 +16,9 @@ static cartridge_state_t state;
 // main initialisation of cartridge when inserted
 void cartridge_init(void){
     event_queue_init();
-    transport_init();
+    //TODO: transport_init must be called when CARTRIDGE IS INSERTED, not manually here!
+
+    //transport_init();
     state = STATE_IDLE;
     //protocol_request_init();
 
@@ -48,14 +50,14 @@ void cartridge_task(void) {
             //rest of the user input capturing probably will be not here.
 
             case EVENT_UREC_START:
-                //hud_notify_by_area("REC", HUD_AREA_RECORD);
-                state = STATE_RECORDING;
+                hud_notify_by_area("REC", HUD_AREA_RECORD);
                 recorder_start();
+                state = STATE_RECORDING;
                 break;
             case EVENT_UREC_STOP:
-                //hud_notify_by_area("   ", HUD_AREA_RECORD);
-                state = STATE_RECORDED;
+                hud_notify_by_area("   ", HUD_AREA_RECORD);
                 recorder_stop();
+                state = STATE_IDLE;
                 break;
 
             default:
@@ -68,11 +70,6 @@ void cartridge_task(void) {
 bool user_input(uint16_t keycode, keyrecord_t *record){
     // if we caught keycode that meant to be handled as initiator of some happening in context of cartridge
     if (!record->event.pressed) {
-        return true;
-    };
-
-    if (state == STATE_RECORDING) {
-        recorder_handle_record(keycode);
         return true;
     };
 
@@ -93,11 +90,13 @@ bool user_input(uint16_t keycode, keyrecord_t *record){
             event_queue_push(EVENT_UREC_STOP);
             return false;
             break;
-        default:
-            //dprintf("NO MATCHING INPUT RECORDS WAS FOUND!");
-            return true;
-            break;
 
-    }
+    };
+
+    if (state == STATE_RECORDING) {
+        recorder_handle_record(keycode);
+        //return false;
+    };
+
     return true;
 };
