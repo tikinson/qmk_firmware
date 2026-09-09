@@ -45,10 +45,6 @@ void cartridge_task(void) {
             case EVENT_CARTRIDGE_PING_PONG:
                 protocol_request_ping();
                 break;
-
-            //rec_start rec_stop events here only for user notifying for now,
-            //rest of the user input capturing probably will be not here.
-
             case EVENT_UREC_START:
                 hud_notify_by_area("REC", HUD_AREA_RECORD);
                 recorder_start();
@@ -68,10 +64,7 @@ void cartridge_task(void) {
 };
 
 bool user_input(uint16_t keycode, keyrecord_t *record){
-    // if we caught keycode that meant to be handled as initiator of some happening in context of cartridge
-    if (!record->event.pressed) {
-        return true;
-    };
+    // is keycode action or useful info in context of cartridge?
 
     switch (keycode) {
         case HELLO:
@@ -94,7 +87,7 @@ bool user_input(uint16_t keycode, keyrecord_t *record){
     };
 
     if (state == STATE_RECORDING) {
-        recorder_handle_record(keycode);
+        recorder_handle_record(keycode, record);
         //return false;
     };
 
