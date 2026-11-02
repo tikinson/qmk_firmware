@@ -21,33 +21,50 @@ void recorder_stop(void){
 // the main goal of collecting user input is to get a data that could be framed as packets in the end
 // like modifiers state, keycode, pressed/released state. Then we can say 'user input was ...' interpet
 // it like a command and send this command.
-bool recorder_handle_record(uint16_t keycode, keyrecord_t *keyrecord){
+bool recorder_collect(uint16_t keycode, keyrecord_t *keyrecord){
     if (record_length >= RECORDER_MAX_KEYS){
         recorder_stop();
         return false;
     };
 
     record_buffer[record_length].keycode = keycode;
-    record_buffer[record_length].active_mods = get_mods();
     record_buffer[record_length].pressed = keyrecord->event.pressed;
+
+    uprintf("[REC_COLLECT]: keycode=%u pressed=%u layer_state=0x%08lX\n",
+        (unsigned int)keycode,
+        keyrecord->event.pressed,
+        (unsigned long)layer_state
+    );
 
     record_length++;
     return false;
 };
 
 void recorder_process_buffer(recorder_entry_t *buffer, uint8_t length){
-    // TODO: logic events to text. a-Z 0-9 ! @ # $ % ^ & * - _ + =
+    // contract between captured events and string that meant to be sent
 
     for (uint8_t i = 0; i < length; i++) {
-        uprintf(
-            ">>> [%u] mods=%u key=%u pressed=%u\n",
-            i,
-            buffer[i].active_mods,
-            buffer[i].keycode,
-            buffer[i].pressed
-        );
+
+        uint16_t keycode = buffer[i].keycode;
+
+        if (keycode >= QK_MODS && keycode <= QK_MODS_MAX) {
+            uint8_t mods = QK_MODS_GET_MODS(keycode);
+            uint8_t basic = QK_MODS_GET_BASIC_KEYCODE(keycode);
+
+            uprintf(
+                "[REC] QK_MODS mods=0x%02X basic=0x%02X\n",
+                mods,
+                basic
+            );
+        }
+        // else if (keycode >= KC_A && keycode <= KC_Z) {
+        //     uprintf("[REC] LETTER keycode=0x%02X\n", keycode);
+        // } else if (keycode <= QK_BASIC_MAX) {
+        //     uprintf("[REC] BASIC keycode=0x%02X\n", keycode);
+        // } else {
+        //     uprintf("[REC] EXTENDED keycode=0x%04X\n", keycode);
+        // }
 
     }
-
 };
 

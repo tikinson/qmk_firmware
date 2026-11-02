@@ -10,5 +10,5 @@ typedef struct {
 
 void recorder_start(void);
 void recorder_stop(void);
-bool recorder_handle_record(uint16_t keycode, keyrecord_t *keyrecord);
+bool recorder_collect(uint16_t keycode, keyrecord_t *keyrecord);
 void recorder_process_buffer(recorder_entry_t *record_buffer, uint8_t length);

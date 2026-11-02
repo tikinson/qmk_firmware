@@ -15,7 +15,6 @@ void event_queue_init(void) {
 
 bool event_queue_push(cartridge_event_t evt){
 
-    // dprintf("%d PUSH is pushing event :\n", evt);
     uint8_t next = (queue.head + 1) % EVENT_QUEUE_SIZE;
     if (next == queue.tail){
         return false;

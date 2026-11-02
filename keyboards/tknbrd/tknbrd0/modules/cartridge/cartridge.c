@@ -66,6 +66,11 @@ void cartridge_task(void) {
 bool user_input(uint16_t keycode, keyrecord_t *record){
     // is keycode action or useful info in context of cartridge?
 
+    // uprintf("[USER_INPUT]: keycode=0x%04X pressed=%u layer_state=0x%08lX\n",
+    //     keycode,
+    //     record->event.pressed,
+    //     (unsigned long)layer_state);
+
     switch (keycode) {
         case HELLO:
             event_queue_push(EVENT_HELLO_HOST);
@@ -87,9 +92,11 @@ bool user_input(uint16_t keycode, keyrecord_t *record){
     };
 
     if (state == STATE_RECORDING) {
-        recorder_handle_record(keycode, record);
-        //return false;
+        recorder_collect(keycode, record);
+        if (IS_QK_MOMENTARY(keycode)) {
+            return true;
+        }
+        return false;
     };
-
     return true;
 };
